@@ -2,13 +2,6 @@
 <html>
 <head>
 	<style type="text/css">
-        
-        /*resizable CSS*/
-		.resizable {
-		    resize: both;   /* Options: horizontal, vertical, both */
-		    overflow: auto; /* fix for Safari */
-            
-		}
 		div {
 			width: 20px;
 			height: 20px;
@@ -16,28 +9,76 @@
 		}
         
         /*resiable css*/
-        p { background: lime; height: 200px; width: 300px; }
-        p.resizable { background: cyan; position: relative; }
-        p .resizer { 
+        p { 
+            background: lime; 
+            height: 200px; 
+            width: 300px; 
+        }
+        p.resizable { 
+            background: cyan; 
+            position: relative; 
+        }
+        p.resizer { 
             width: 10px; 
             height: 10px; 
             background: blue; 
             position:absolute; 
             right: 0; 
             bottom: 0; 
-            cursor: se-resize; }
+            cursor: se-resize; 
+        }
+        
+        /*Insert image*/
+        .thumb {
+            height: 500px;
+            border: 1px solid #000;
+            margin: 10px 5px 0 0;
+          }
 	</style>
 </head>
 <body>
-	<!--div id="one" class="resizable">
-		<p>Test</p>
-	</div-->
+	
+    <input type="file" id="files" name="files[]" multiple />
+    <output id="list"></output>
+
+
     
-    <p id="one">Resizable</p>
 <script>
-	//Drag-able
+    //File Upload
+    function handleFileSelect(evt) {
+        var files = evt.target.files; // FileList object
+    
+        // Loop through the FileList and render image files as thumbnails.
+        for (var i = 0, f; f = files[i]; i++) {
+    
+          // Only process image files.
+          if (!f.type.match('image.*')) {
+            continue;
+          }
+    
+          var reader = new FileReader();
+    
+          // Closure to capture the file information.
+          reader.onload = (function(theFile) {
+            return function(e) {
+              // Render thumbnail.
+              var span = document.createElement('span');
+              span.innerHTML = ['<img class="thumb" src="', e.target.result,
+                                '" title="', escape(theFile.name), '"/>'].join('');
+              document.getElementById('list').insertBefore(span, null);
+            };
+          })(f);
+    
+          // Read in the image file as a data URL.
+          reader.readAsDataURL(f);
+        }
+    }
+
+    document.getElementById('files').addEventListener('change', handleFileSelect, false);
+	
+    //Drag-able
 	window.onload = function(){
-	    draggable('one');
+	    draggable('drag');
 	};
 
 	var dragObj = null;
